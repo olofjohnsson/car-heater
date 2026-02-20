@@ -83,7 +83,7 @@ static struct sensor_value
 get_battery_voltage()
 {
 	struct sensor_value vbat;
-  int32_t ret = 0;
+    int32_t ret = 0;
 
 	/* Fetch latest measurements from the charger */
 	ret = sensor_sample_fetch(charger);
