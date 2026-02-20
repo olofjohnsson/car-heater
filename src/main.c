@@ -19,7 +19,7 @@
 #include <zephyr/drivers/charger.h>
 #include <zephyr/drivers/sensor.h>
 
-LOG_MODULE_REGISTER(car_heater_main, LOG_LEVEL_INF);
+LOG_MODULE_REGISTER(car_heater_main, LOG_LEVEL_DBG);
 
 #define PMIC_CHARGER_NODE DT_NODELABEL(npm1300_charger)
 const struct device *charger = DEVICE_DT_GET(PMIC_CHARGER_NODE);
@@ -45,7 +45,39 @@ const struct device *charger = DEVICE_DT_GET(PMIC_CHARGER_NODE);
 #define CGSN_RESPONSE_LENGTH (IMEI_LEN + 6 + 1) /* Add 6 for \r\nOK\r\n and 1 for \0 */
 #define CLIENT_ID_LEN sizeof("nrf-") + IMEI_LEN /* \0 included in sizeof() statement */
 
+static struct k_work_delayable reconnect_work;
+
 static K_SEM_DEFINE(lte_connected, 0, 1);
+
+/* Define the function to publish data */
+static int publish(uint8_t *data, size_t len)
+{
+	int err;
+	/* Declare and populate a variable of type mqtt_publish_param */	
+	struct mqtt_publish_param mqtt_param;
+
+	mqtt_param.message.payload.data = data;
+	mqtt_param.message.payload.len = len;
+	mqtt_param.message.topic.qos = MQTT_QOS_1_AT_LEAST_ONCE;
+	mqtt_param.message_id = mqtt_helper_msg_id_get(),
+	mqtt_param.message.topic.topic.utf8 = CONFIG_MQTT_SAMPLE_PUB_TOPIC;
+	mqtt_param.message.topic.topic.size = strlen(CONFIG_MQTT_SAMPLE_PUB_TOPIC);
+	mqtt_param.dup_flag = 0;
+	mqtt_param.retain_flag = 0;
+
+	/* Publish to MQTT broker */
+	err = mqtt_helper_publish(&mqtt_param);
+	if (err) {
+		LOG_WRN("Failed to send payload, err: %d", err);
+		return err;
+	}
+
+	LOG_INF("Published message: \"%.*s\" on topic: \"%.*s\"", mqtt_param.message.payload.len,
+								  mqtt_param.message.payload.data,
+								  mqtt_param.message.topic.topic.size,
+								  mqtt_param.message.topic.topic.utf8);
+	return 0;
+}
 
 static struct sensor_value
 get_battery_voltage()
@@ -66,7 +98,7 @@ get_battery_voltage()
 	}
 
 	/* vbat is in volts, as a Q16.16 fixed-point value */
-	printk("VBAT = %d.%06d V\n", vbat.val1, vbat.val2);
+	LOG_DBG("VBAT = %d.%02d V\n", vbat.val1, vbat.val2);
 	return vbat;
 }
 
@@ -74,11 +106,13 @@ static void
 publish_battery_voltage()
 {
 	int32_t err = 0;
-	float val = get_battery_voltage().val1 +
-            	get_battery_voltage().val2 / 1000000.0f;
 	char message[50];
+	struct sensor_value v = get_battery_voltage();
+
 	snprintf(message, sizeof(message),
-					"Battery voltage: %.2f V", val);
+					"Battery voltage: %d.%02d V",
+					v.val1,
+					v.val2 / 10000);
 	err = publish(message, strlen(message));
 	if (err)
 	{
@@ -86,7 +120,7 @@ publish_battery_voltage()
 		return;
 	}
 }
-/* STEP 9.2 - Declare the variable to store the client ID */
+/* Declare the variable to store the client ID */
 static uint8_t client_id[CLIENT_ID_LEN];
 
 static void lte_handler(const struct lte_lc_evt *const evt)
@@ -108,7 +142,8 @@ static void lte_handler(const struct lte_lc_evt *const evt)
 		break;
      default:
              break;
-     }
+  }
+	
 }
 
 static int modem_configure(void)
@@ -188,7 +223,7 @@ static void subscribe(void)
 {
 	int err;
 
-	/* STEP 4.1 - Declare a variable of type mqtt_topic */
+	/* Declare a variable of type mqtt_topic */
 	struct mqtt_topic subscribe_topic = {
 		.topic = {
 			.utf8 = CONFIG_MQTT_SAMPLE_SUB_TOPIC, 
@@ -196,13 +231,13 @@ static void subscribe(void)
 		},
 		.qos = MQTT_QOS_1_AT_LEAST_ONCE};
 
-	/* STEP 4.2 - Define a subscription list */
+	/* Define a subscription list */
 	struct mqtt_subscription_list subscription_list = {
 		.list = &subscribe_topic,
 		.list_count = 1,
 		.message_id = SUBSCRIBE_TOPIC_ID};
 
-	/* STEP 4.3 - Subscribe to topics */
+	/* Subscribe to topics */
 	LOG_INF("Subscribing to %s", CONFIG_MQTT_SAMPLE_SUB_TOPIC);
 	err = mqtt_helper_subscribe(&subscription_list);
 	if (err) {
@@ -211,37 +246,7 @@ static void subscribe(void)
 	}
 }
 
-/* STEP 5 - Define the function to publish data */
-static int publish(uint8_t *data, size_t len)
-{
-	int err;
-	/* STEP 5.1 - Declare and populate a variable of type mqtt_publish_param */	
-	struct mqtt_publish_param mqtt_param;
-
-	mqtt_param.message.payload.data = data;
-	mqtt_param.message.payload.len = len;
-	mqtt_param.message.topic.qos = MQTT_QOS_1_AT_LEAST_ONCE;
-	mqtt_param.message_id = mqtt_helper_msg_id_get(),
-	mqtt_param.message.topic.topic.utf8 = CONFIG_MQTT_SAMPLE_PUB_TOPIC;
-	mqtt_param.message.topic.topic.size = strlen(CONFIG_MQTT_SAMPLE_PUB_TOPIC);
-	mqtt_param.dup_flag = 0;
-	mqtt_param.retain_flag = 0;
-
-	/* STEP 5.2 - Publish to MQTT broker */
-	err = mqtt_helper_publish(&mqtt_param);
-	if (err) {
-		LOG_WRN("Failed to send payload, err: %d", err);
-		return err;
-	}
-
-	LOG_INF("Published message: \"%.*s\" on topic: \"%.*s\"", mqtt_param.message.payload.len,
-								  mqtt_param.message.payload.data,
-								  mqtt_param.message.topic.topic.size,
-								  mqtt_param.message.topic.topic.utf8);
-	return 0;
-}
-
-/* STEP 6.1 - Define callback handler for CONNACK event */
+/* Define callback handler for CONNACK event */
 static void on_mqtt_connack(enum mqtt_conn_return_code return_code, bool session_present)
 {
 	ARG_UNUSED(session_present);
@@ -353,8 +358,8 @@ static void on_mqtt_publish(struct mqtt_helper_buf topic, struct mqtt_helper_buf
 	
 }
 
-static void
-reconnect()
+int32_t
+connect_to_mqtt_server(void)
 {
 	int32_t err = 0;
 	/* STEP 10 - Establish a connection to the MQTT broker */
@@ -369,13 +374,29 @@ reconnect()
 	if (err) {
 		LOG_ERR("Failed to connect to MQTT, error code: %d", err);
 	}
+	return err;
 }
 
 /* STEP 6.4 - Define callback handler for DISCONNECT event */
 static void on_mqtt_disconnect(int result)
 {
 	LOG_INF("MQTT client disconnected: %d", result);
-	reconnect();
+	// Start reconnect attempts immediately
+  k_work_schedule(&reconnect_work, K_NO_WAIT);
+}
+
+static void reconnect_work_handler(struct k_work *work)
+{
+    int rc;
+
+    LOG_INF("Attempting MQTT reconnect...");
+
+    rc = connect_to_mqtt_server();
+
+    if (rc != 0) {
+        LOG_WRN("Reconnect failed (%d), retrying in 5 seconds", rc);
+        k_work_schedule(&reconnect_work, K_SECONDS(5));
+    }
 }
 
 static void button_handler(uint32_t button_state, uint32_t has_changed)
@@ -444,6 +465,8 @@ int main(void)
         LOG_ERR("Failed to get client ID, error: %d", err);
         return 0;
     }
+	
+	k_work_init_delayable(&reconnect_work, reconnect_work_handler);
 
 	struct mqtt_helper_conn_params conn_params = {
 		.hostname.ptr = CONFIG_MQTT_SAMPLE_BROKER_HOSTNAME,
