@@ -1,0 +1,58 @@
+cmake:
+  application:
+    configuration-dir: '/home/olofjohnsson/repos/car-heater'
+    source-dir: '/home/olofjohnsson/repos/car-heater'
+  board:
+    name: 'thingy91x'
+    path:
+     - '/home/olofjohnsson/ncs/v3.1.1/nrf/boards/nordic/thingy91x'
+    qualifiers: 'nrf9151/ns'
+    revision: ''
+  devicetree:
+    bindings-dirs:
+     - '/home/olofjohnsson/ncs/v3.1.1/nrf/dts/bindings'
+     - '/home/olofjohnsson/ncs/v3.1.1/zephyr/dts/bindings'
+    files:
+     - '/home/olofjohnsson/ncs/v3.1.1/nrf/boards/nordic/thingy91x/thingy91x_nrf9151_ns.dts'
+    include-dirs:
+     - '/home/olofjohnsson/ncs/v3.1.1/nrf/include'
+     - '/home/olofjohnsson/ncs/v3.1.1/nrf/dts/common'
+     - '/home/olofjohnsson/ncs/v3.1.1/nrf/dts/riscv'
+     - '/home/olofjohnsson/ncs/v3.1.1/nrf/dts/arm'
+     - '/home/olofjohnsson/ncs/v3.1.1/nrf/dts'
+     - '/home/olofjohnsson/ncs/v3.1.1/nrf/boards/nordic/thingy91x/dts'
+     - '/home/olofjohnsson/ncs/v3.1.1/zephyr/include'
+     - '/home/olofjohnsson/ncs/v3.1.1/zephyr/include/zephyr'
+     - '/home/olofjohnsson/ncs/v3.1.1/zephyr/dts/common'
+     - '/home/olofjohnsson/ncs/v3.1.1/zephyr/dts/vendor'
+     - '/home/olofjohnsson/ncs/v3.1.1/zephyr/dts/rx'
+     - '/home/olofjohnsson/ncs/v3.1.1/zephyr/dts/x86'
+     - '/home/olofjohnsson/ncs/v3.1.1/zephyr/dts/xtensa'
+     - '/home/olofjohnsson/ncs/v3.1.1/zephyr/dts/sparc'
+     - '/home/olofjohnsson/ncs/v3.1.1/zephyr/dts/riscv'
+     - '/home/olofjohnsson/ncs/v3.1.1/zephyr/dts/posix'
+     - '/home/olofjohnsson/ncs/v3.1.1/zephyr/dts/arm64'
+     - '/home/olofjohnsson/ncs/v3.1.1/zephyr/dts/arm'
+     - '/home/olofjohnsson/ncs/v3.1.1/zephyr/dts/arc'
+     - '/home/olofjohnsson/ncs/v3.1.1/zephyr/dts'
+  images:
+   - name: 'tfm'
+     source-dir: '/home/olofjohnsson/ncs/v3.1.1/modules/tee/tf-m/trusted-firmware-m'
+  kconfig:
+    files:
+     - '/home/olofjohnsson/ncs/v3.1.1/nrf/boards/nordic/thingy91x/thingy91x_nrf9151_ns_defconfig'
+     - '/home/olofjohnsson/repos/car-heater/prj.conf'
+     - '/home/olofjohnsson/repos/car-heater/build/car-heater/zephyr/misc/generated/extra_kconfig_options.conf'
+     - '/home/olofjohnsson/repos/car-heater/build/car-heater/zephyr/.config.sysbuild'
+    user-files:
+     - '/home/olofjohnsson/repos/car-heater/prj.conf'
+  toolchain:
+    name: 'zephyr'
+    path: '/home/olofjohnsson/ncs/toolchains/b2ecd2435d/opt/zephyr-sdk'
+  vendor-specific:
+    nordic:
+      svdfile: '/home/olofjohnsson/ncs/v3.1.1/modules/hal/nordic/nrfx/mdk/nrf9120.svd'
+  zephyr:
+    version: '4.1.99'
+    zephyr-base: '/home/olofjohnsson/ncs/v3.1.1/zephyr'
+version: '0.1.0'

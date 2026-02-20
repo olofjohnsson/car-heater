@@ -1,0 +1,13 @@
+# Target labels
+ b0
+# Source files and their labels
+/home/olofjohnsson/repos/car-heater/build/modules/nrf/CMakeFiles/b0
+/home/olofjohnsson/repos/car-heater/build/modules/nrf/CMakeFiles/b0.rule
+/home/olofjohnsson/repos/car-heater/build/modules/nrf/CMakeFiles/b0-complete.rule
+/home/olofjohnsson/repos/car-heater/build/modules/nrf/b0-prefix/src/b0-stamp/b0-build.rule
+/home/olofjohnsson/repos/car-heater/build/modules/nrf/b0-prefix/src/b0-stamp/b0-configure.rule
+/home/olofjohnsson/repos/car-heater/build/modules/nrf/b0-prefix/src/b0-stamp/b0-download.rule
+/home/olofjohnsson/repos/car-heater/build/modules/nrf/b0-prefix/src/b0-stamp/b0-install.rule
+/home/olofjohnsson/repos/car-heater/build/modules/nrf/b0-prefix/src/b0-stamp/b0-mkdir.rule
+/home/olofjohnsson/repos/car-heater/build/modules/nrf/b0-prefix/src/b0-stamp/b0-patch.rule
+/home/olofjohnsson/repos/car-heater/build/modules/nrf/b0-prefix/src/b0-stamp/b0-update.rule

@@ -1,0 +1,13 @@
+default: car-heater
+build_dir: /home/olofjohnsson/repos/car-heater/build
+domains:
+  - name: car-heater
+    build_dir: /home/olofjohnsson/repos/car-heater/build/car-heater
+  - name: mcuboot
+    build_dir: /home/olofjohnsson/repos/car-heater/build/mcuboot
+  - name: b0
+    build_dir: /home/olofjohnsson/repos/car-heater/build/b0
+  - name: s1_image
+    build_dir: /home/olofjohnsson/repos/car-heater/build/s1_image
+flash_order:
+  - car-heater

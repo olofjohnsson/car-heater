@@ -1,0 +1,13 @@
+# Target labels
+ tfm
+# Source files and their labels
+/home/olofjohnsson/repos/car-heater/build/car-heater/modules/trusted-firmware-m/CMakeFiles/tfm
+/home/olofjohnsson/repos/car-heater/build/car-heater/modules/trusted-firmware-m/CMakeFiles/tfm.rule
+/home/olofjohnsson/repos/car-heater/build/car-heater/modules/trusted-firmware-m/CMakeFiles/tfm-complete.rule
+/home/olofjohnsson/repos/car-heater/build/car-heater/modules/trusted-firmware-m/tfm-prefix/src/tfm-stamp/tfm-build.rule
+/home/olofjohnsson/repos/car-heater/build/car-heater/modules/trusted-firmware-m/tfm-prefix/src/tfm-stamp/tfm-configure.rule
+/home/olofjohnsson/repos/car-heater/build/car-heater/modules/trusted-firmware-m/tfm-prefix/src/tfm-stamp/tfm-download.rule
+/home/olofjohnsson/repos/car-heater/build/car-heater/modules/trusted-firmware-m/tfm-prefix/src/tfm-stamp/tfm-install.rule
+/home/olofjohnsson/repos/car-heater/build/car-heater/modules/trusted-firmware-m/tfm-prefix/src/tfm-stamp/tfm-mkdir.rule
+/home/olofjohnsson/repos/car-heater/build/car-heater/modules/trusted-firmware-m/tfm-prefix/src/tfm-stamp/tfm-patch.rule
+/home/olofjohnsson/repos/car-heater/build/car-heater/modules/trusted-firmware-m/tfm-prefix/src/tfm-stamp/tfm-update.rule
